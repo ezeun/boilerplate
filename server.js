@@ -29,11 +29,11 @@ app.get('/beauty', function(req, res){
 });  
 
 app.get('/', function(req, res){
-    res.sendFile(__dirname + '/index.html')
+    res.render('index.ejs'); 
 });  
 
 app.get('/write', function(req, res){
-    res.sendFile(__dirname + '/write.html')
+    res.render('write.ejs'); 
 });  
 
 app.post('/add', function(req, res){
