@@ -3,6 +3,8 @@ const app = express();
 const bodyParser = require('body-parser');
 app.use(bodyParser.urlencoded({extended : true}));
 const MongoClient = require('mongodb').MongoClient;
+const methodOverride = require('method-override')
+app.use(methodOverride('_method'))
 app.set('view engine', 'ejs');
 app.use('/public', express.static('public'));
 
@@ -55,7 +57,6 @@ app.post('/add', function(req, res){
             })
         });
     });
-
 });
 
 app.get('/list', function(req, res){
@@ -80,3 +81,18 @@ app.get('/detail/:id', function(req, res){
         res.render('detail.ejs', { data : result}); 
     })
 }); 
+
+app.get('/edit/:id', function(req, res){
+    db.collection('post').findOne({_id : parseInt(req.params.id)}, function(error, result){ 
+        console.log(result)
+        res.render('edit.ejs', { data : result}); 
+    })
+}); 
+
+app.put('/edit', function(req, res){
+    db.collection('post').updateOne({ _id : parseInt(req.body.id) }, { $set : { 코드: req.body.code, 입력: req.body.input, 출력: req.body.output}}, function(error, result){
+        console.log('수정완료')
+        res.redirect('/list')
+    });
+
+});
