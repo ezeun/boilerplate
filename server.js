@@ -4,12 +4,13 @@ const bodyParser = require('body-parser');
 app.use(bodyParser.urlencoded({extended : true}));
 const MongoClient = require('mongodb').MongoClient;
 const methodOverride = require('method-override')
+require('dotenv').config()
 app.use(methodOverride('_method'))
 app.set('view engine', 'ejs');
 app.use('/public', express.static('public'));
 
 var db;
-MongoClient.connect('mongodb+srv://admin:qwer1234@cluster0.ecwllpn.mongodb.net/?retryWrites=true&w=majority', function(error, client){
+MongoClient.connect(process.env.DB_URL, function(error, client){
     if(error) return console.log(error)
     db = client.db('compiler');
 
@@ -17,10 +18,10 @@ MongoClient.connect('mongodb+srv://admin:qwer1234@cluster0.ecwllpn.mongodb.net/?
     //     console.log('저장완료');
     // });
 
-    app.listen(8080, function(){ 
+    app.listen(process.env.PORT, function(){ 
         console.log('listening on 8080')
     });    
-});
+}); 
 
 app.get('/pet', function(req, res){ 
     res.send('펫 용품 쇼핑 페이지입니다.')
