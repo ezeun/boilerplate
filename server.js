@@ -8,6 +8,9 @@ require('dotenv').config()
 app.use(methodOverride('_method'))
 app.set('view engine', 'ejs');
 app.use('/public', express.static('public'));
+var fs = require('fs');
+const { cpp, python } = require('compile-run');
+const { exec } = require('child_process');
 
 var db;
 MongoClient.connect(process.env.DB_URL, function(error, client){
@@ -22,14 +25,6 @@ MongoClient.connect(process.env.DB_URL, function(error, client){
         console.log('listening on 8080')
     });    
 }); 
-
-app.get('/pet', function(req, res){ 
-    res.send('펫 용품 쇼핑 페이지입니다.')
-});
-
-app.get('/beauty', function(req, res){
-    res.send('뷰티 용품 쇼핑 페이지입니다.')
-});  
 
 app.get('/', function(req, res){
     res.render('index.ejs'); 
@@ -160,3 +155,138 @@ passport.use(new LocalStrategy({
         done(null, result)
     })
   }); 
+
+
+
+  // web compiler
+  app.post('/output', function (req, res) {
+    let selected_language = req.body.language;
+    let inputParameters = req.body.inputArea;
+    let codeArea = req.body.codeArea;
+
+    var backButton = `<br><br><style>body{background-color:white;}button{width:100px;height:30px;cursor:pointer;color:white;background-color:black;font-size:25px;border-radius:25px;}button:hover{background-color:green;}</style><button onClick='back()'>Back</button>
+    <script>function back(){history.go(-1);}    </script>`;
+
+    console.log("Language: "+selected_language+"\n"+codeArea);
+   
+    
+    if (selected_language === "C++") {
+        const sourcecode = req.body.codeArea;
+        let inputParameters = req.body.inputArea;
+
+        fs.writeFile('Main.CPP', sourcecode, function (err) {
+            if (err) throw err;
+            console.log('Saved!');
+            console.log("Inputs Passed:\n"+inputParameters);
+        });
+
+        cpp.runFile('Main.CPP', { stdin:inputParameters}, (err, result) => {
+        if(err){
+            console.log(err);
+        }
+        else{
+            //res.send('<center><h1 style="color:yellow;">Output:-</h1><b style="color:white;font-size:30px;">'+result['stderr']+"<br>"+result['stdout']+"<br>Memory Usage (Bytes): "+result['memoryUsage']+"<br>CPU Usage(Micro Sec): "+result['cpuUsage']+backButton);
+            res.send(result['stderr']+"<br>"+result['stdout']+"<br><br>Memory Usage (Bytes): "+result['memoryUsage']+"<br>CPU Usage(Micro Sec): "+result['cpuUsage']+backButton);
+            console.log(result);
+        }
+        });
+    }
+    else if (selected_language === "Python") {
+        const sourceCode = req.body.codeArea;
+        let inputParameters = req.body.inputArea;
+    
+        //코드 파일과 입력 파일 생성
+        fs.writeFileSync('main.py', req.body.codeArea);
+        fs.writeFileSync('input.txt', req.body.inputArea);
+        fs.writeFileSync('error.txt', "");
+        // fs.writeFile('main.py', sourceCode, function (err) {
+        //   if (err) throw err;
+        //   console.log('Saved!');
+        //   console.log("Inputs Passed:\n" + inputParameters);
+        // });
+    
+        //명령어 생성
+        const pythonCommand = `python main.py`;
+        const pythonErrorCommand = `${pythonCommand} 2> error.txt`;
+    
+        //권한 변경
+        //fs.chmodSync('error.txt', 0o777);
+
+        //에러 파일 생성
+        fs.closeSync(fs.openSync('error.txt', 'w'));
+    
+        //에러 명령어 실행
+        exec(pythonErrorCommand, (error, stdout, stderr) => {
+          //에러 발생 시 에러 출력
+          if (error) {
+            console.error(`exec error: ${error}`);
+            const errorData = fs.readFileSync('error.txt', 'utf-8');
+            console.error(`stderr: ${errorData}`);
+            fs.unlinkSync('error.txt');
+            return;
+          }
+    
+          //입력 값이 없는 경우
+          let command = pythonCommand;
+          if (!inputParameters.trim()) {
+            exec(command, (error, stdout, stderr) => {
+                if (error) {
+                  console.error(`exec error: ${error}`);
+                  const errorData = fs.readFileSync('error.txt', 'utf-8');
+                  console.error(`stderr: ${errorData}`);
+                  fs.unlinkSync('error.txt');
+                  return;
+                }
+        
+                console.log(`stdout: ${stdout}`);
+            });
+          }
+          //입력값이 있는 경우
+          else {
+            command = `${command} < ${'input.txt'}`;
+            exec(command, (error, stdout, stderr) => {
+              if (error) {
+                console.error(`exec error: ${error}`);
+                const errorData = fs.readFileSync('error.txt', 'utf-8');
+                console.error(`stderr: ${errorData}`);
+                fs.unlinkSync('error.txt'); // 에러 파일 삭제
+                return;
+              }
+              console.log(`stdout: ${stdout}`);
+            });
+          }
+    
+          res.send(`${stderr}<br>${stdout}<br><br>${backButton}`);
+          
+          //파일 삭제
+          fs.unlinkSync('main.py');
+          fs.unlinkSync('input.txt');
+          fs.unlinkSync('error.txt');
+        });
+    }
+
+    // else if (selected_language === "Python") {
+    //     const sourcecode = req.body.codeArea;
+    //     let inputParameters = req.body.inputArea;
+    
+    //     fs.writeFile('Main.py', sourcecode, function (err) {
+    //       if (err) throw err;
+    //       console.log('Saved!');
+    //       console.log("Inputs Passed:\n"+inputParameters);
+    //     });
+    
+    //     python.runFile('Main.py', { stdin:inputParameters}, (err, result) => {
+    //       if(err){
+    //           console.log(err);
+    //       }
+    //       else{
+    //           res.send(result['stderr']+"<br>"+result['stdout']+"<br><br>Memory Usage (Bytes): "+result['memoryUsage']+"<br>CPU Usage(Micro Sec): "+result['cpuUsage']+backButton);
+    //           console.log(result);
+    //       }
+    //   });    
+    // }
+    else {
+        res.send('<center><h1 style="color:yellow;">Output:-</h1><h1 style="color:white;font-size:50px;">' + "Something Went Wrong / Wrong Language Chosen");
+    }
+
+})
