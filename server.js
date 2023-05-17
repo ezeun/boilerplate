@@ -190,10 +190,6 @@ passport.use(new LocalStrategy({
     }
     else if (selected_language === "Python") {
         //코드 파일과 입력 파일 생성
-        //fs.writeFile('main.py', req.body.codeArea);
-        //fs.writeFile('input.txt', req.body.inputArea);
-        //fs.writeFile('error.txt', "");
-
         fs.writeFile('main.py', sourcecode, function (err) {
             if (err) throw err;
             console.log('sourceCode Saved!');
@@ -203,139 +199,38 @@ passport.use(new LocalStrategy({
             console.log('input Saved!');
             console.log("Inputs Passed:\n" + inputParameters);
         });
-        //fs.writeFile('error.txt', "", function (err) {
-        //    if (err) throw err;
-        //    console.log('Saved!');
-        //    console.log("Inputs Passed:\n" + inputParameters);
-        //});
     
-        //명령어 생성
+        //입력값이 있을 때와 없을 때에 따른 명령어 생성
         const pythonCommand = `python main.py`;
         let pythonErrorCommand = `${pythonCommand} 2> error.txt`;
     
         if (inputParameters.trim()){
-            pythonErrorCommand = `${pythonCommand} < input.txt`;
+            pythonErrorCommand = `${pythonCommand} < input.txt 2> error.txt`;
         }
-        //권한 변경
-        //fs.chmodSync('error.txt', 0o777);
-
-        //에러 파일 생성
-        //fs.closeSync(fs.openSync('error.txt', 'w'));
     
         //에러 명령어 실행
         exec(pythonErrorCommand, (error, stdout, stderr) => {
           //에러 발생 시 에러 출력
+          let errorData = "";
           if (error) {
             console.error(`exec error: ${error}`);
-            //const errorData = fs.readFileSync('error.txt', 'utf-8');
-            //console.error(`stderr: ${errorData}`);
-            //fs.unlinkSync('error.txt');
-            return;
+            errorData = fs.readFileSync('error.txt', 'utf-8');
+            console.error(`stderr: ${errorData}`);
+            //return;
           }
           if(stderr){
             console.log(`stderr: ${stderr}`);
-            return;
+            //return;
           }
 
-          /*
-          fs.readFile('input.txt', 'utf8', (err, data) => {
-            if (err) {
-              console.error(err);
-              return;
-            }
-          
-            let command = pythonCommand;
-            // 파일이 비어있는지 확인
-            if (data.trim() === '') {
-                exec(command, (error, stdout, stderr) => {
-                    if (error) {
-                      console.error(`exec error: ${error}`);
-                      const errorData = fs.readFileSync('error.txt', 'utf-8');
-                      console.error(`stderr: ${errorData}`);
-                      fs.unlinkSync('error.txt');
-                      return;
-                    }
-            
-                    console.log(`stdout: ${stdout}`);
-                });
-            } 
-            else {
-                command = `${command} < ${'input.txt'}`;
-                exec(command, (error, stdout, stderr) => {
-                  if (error) {
-                    console.error(`exec error: ${error}`);
-                    const errorData = fs.readFileSync('error.txt', 'utf-8');
-                    console.error(`stderr: ${errorData}`);
-                    fs.unlinkSync('error.txt'); // 에러 파일 삭제
-                    return;
-                  }
-                  console.log(`stdout: ${stdout}`);
-                });
-            }
-          });
-          */
-
-        /*  
-          //입력 값이 없는 경우
-          let command = pythonCommand;
-          if (!inputParameters.trim()) {
-            exec(command, (error, stdout, stderr) => {
-                if (error) {
-                  console.error(`exec error: ${error}`);
-                  //const errorData = fs.readFileSync('error.txt', 'utf-8');
-                  console.error(`stderr: ${errorData}`);
-                  //fs.unlinkSync('error.txt');
-                  return;
-                }
-        
-                console.log(`stdout: ${stdout}`);
-            });
-          }
-          //입력값이 있는 경우
-          else {
-            console.log('hi');
-            command = `${command} < ${'input.txt'}`;
-            exec(command, (error, stdout, stderr) => {
-              if (error) {
-                console.error(`exec error: ${error}`);
-                //const errorData = fs.readFileSync('error.txt', 'utf-8');
-                console.error(`stderr: ${errorData}`);
-                //fs.unlinkSync('error.txt'); // 에러 파일 삭제
-                return;
-              }
-              console.log(`stdout: ${stdout}`);
-            });
-          }
-        */
-          res.send(`${stderr}<br>${stdout}<br><br>${backButton}`);
+          res.send(`${errorData}<br>${stderr}<br>${stdout}<br><br>${backButton}`);
           
           //파일 삭제
-          //fs.unlinkSync('main.py');
-          //fs.unlinkSync('input.txt');
-          //fs.unlinkSync('error.txt');
+          fs.unlinkSync('main.py');
+          fs.unlinkSync('input.txt');
+          fs.unlinkSync('error.txt');
         });
     }
-
-    // else if (selected_language === "Python") {
-    //     const sourcecode = req.body.codeArea;
-    //     let inputParameters = req.body.inputArea;
-    
-    //     fs.writeFile('Main.py', sourcecode, function (err) {
-    //       if (err) throw err;
-    //       console.log('Saved!');
-    //       console.log("Inputs Passed:\n"+inputParameters);
-    //     });
-    
-    //     python.runFile('Main.py', { stdin:inputParameters}, (err, result) => {
-    //       if(err){
-    //           console.log(err);
-    //       }
-    //       else{
-    //           res.send(result['stderr']+"<br>"+result['stdout']+"<br><br>Memory Usage (Bytes): "+result['memoryUsage']+"<br>CPU Usage(Micro Sec): "+result['cpuUsage']+backButton);
-    //           console.log(result);
-    //       }
-    //   });    
-    // }
     else {
         res.send('<center><h1 style="color:yellow;">Output:-</h1><h1 style="color:white;font-size:50px;">' + "Something Went Wrong / Wrong Language Chosen");
     }
