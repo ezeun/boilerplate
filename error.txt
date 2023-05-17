@@ -1,0 +1,6 @@
+object address  : 000001CBD8B46AA0
+object refcount : 2
+object type     : 00007FFE39F7D410
+object type name: EOFError
+object repr     : EOFError('EOF when reading a line')
+lost sys.stderr
