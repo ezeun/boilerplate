@@ -13,62 +13,47 @@
   <body>
     <%- include('nav.html') %>
 
-    <div class="container mt-4 ml-3">
-      <!--
-        <form action="/add" method="POST">
-            <div class="form-group">
-                <label>Code</label>
-                <textarea type="text" class="form-control" rows="5" name="code"></textarea>
-            </div>
-            <div class="form-group">
-                <label>Input</label>
-                <textarea type="text" class="form-control" rows="5" name="input"></textarea>
-            </div>
-            <div class="form-group">
-                <label">Output</label>
-                <textarea type="text" class="form-control" rows="5" name="output"></textarea>
-            </div>
-            <button type="submit" class="btn btn-primary">Run</button>
-        </form>
-      -->
-
-      <form method="post" action="/output" novalidate>
-        <div class="form-field">
-          <label for="codeSelection" style="color:blue;font-size: 20px;">Select Language</label>
-          <select name="language" id="" class="input">
+    <div class="container" style="margin :auto">
+      <form method="post" action="/output" novalidate name="sendform">
+        <div class="form-group">
+          <label for="codeSelection" style="color: blue; font-size: 20px;">Select Language</label>
+          <select name="language" id="codeSelection" class="form-control">
             <option value="C++">C++</option>
-            <option value="Python">Python</option>    
+            <option value="Python">Python</option>
           </select>
         </div>
-    
-        <div class="form-field">
-          <label for="code" style="color:blue;font-size: 20px;">Code</label>
-          <textarea class="input" id="codeArea" name="codeArea" rows="14" cols="30" autofocus
-            onkeydown="if(event.keyCode===9){var v=this.value,s=this.selectionStart,e=this.selectionEnd;this.value=v.substring(0, s)+'\t'+v.substring(e);this.selectionStart=this.selectionEnd=s+1;return false;}">
+
+        <div class="form-row">
+          <div class="col">
+            <label for="code" style="color: blue; font-size: 20px;">Code</label>
+            <textarea class="form-control" id="codeArea" name="codeArea" rows="14" cols="30" autofocus
+              onkeydown="if(event.keyCode===9){var v=this.value,s=this.selectionStart,e=this.selectionEnd;this.value=v.substring(0, s)+'\t'+v.substring(e);this.selectionStart=this.selectionEnd=s+1;return false;}">
 #include <iostream>
-  using namespace std;
-  int main() {
-    cout << "hello";
-    return 0;
-  }
-              
-          </textarea>
-    
-          <label for="code" style="color:blue;font-size: 20px;">Inputs</label>
-          <textarea class="input" id="inputsProgram" name="inputArea" rows="4" cols="30"
-            style="font-weight:bolder;font-size:20px;color:black;border:1px solid black;"
-            placeholder="Input must be separated by Line"></textarea>
-    
+using namespace std;
+int main() {
+  cout << "hello";
+  return 0;
+}</textarea>
+          </div>
+          <div class="col">
+            <label for="code" style="color: blue; font-size: 20px;">Inputs</label>
+            <textarea class="form-control" id="inputsProgram" name="inputArea" rows="4" cols="30"
+              style="font-weight: bolder; font-size: 20px; color: black; border: 1px solid black;"
+              placeholder="Input must be separated by Line"></textarea>
+          </div>
+          <div class="col">
+            <label for="code" style="color: blue; font-size: 20px;">Outputs</label>
+            <textarea class="form-control" id="outputsProgram" name="outputArea" rows="4" cols="30"
+              style="font-weight: bolder; font-size: 20px; color: black; border: 1px solid black;" readonly></textarea>
+          </div>
         </div>
-    
-    
-        <div class="form-actions">
-          <button class="btn" type="submit">Execute</button> <button class="btn" type="reset"
-            onClick="refreshPage()">Reset</button>
-    
+
+        <div class="form-actions mt-3">
+          <button class="btn btn-primary" type="submit">Execute</button>
+          <button class="btn btn-secondary" type="reset" onClick="refreshPage()">Reset</button>
+          <button type="button" class="btn btn-info" onclick="resultOut()">테스트</button>
         </div>
       </form>
-
     </div>
 
     <!-- Optional JavaScript; choose one of the two! -->
@@ -83,5 +68,29 @@
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.min.js" integrity="sha384-+sLIOodYLS7CIrQpBjl+C7nPvqq+FbNUBDunl/OZv93DB7Ln/533i8e/mZXLi/P+" crossorigin="anonymous"></script>
     -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+      const arrayData = $("form[name='sendform']").serializeArray();
+
+      console.log(arrayData);
+
+      const resultOut = () => {
+        console.log("resultOut 실행")
+        $.ajax({
+          type: "post",
+          url: "/output",
+          data: arrayData,
+          success: (result) => {
+            console.log("arrayData", arrayData);
+            console.log("성공", result);
+            $("#outputsProgram").val(result);
+          },
+          error: (error) => {
+            console.log("arrayData", arrayData);
+            console.log("실패", error);
+          },
+        });
+      };
+    </script>
   </body>
 </html>

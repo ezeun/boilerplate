@@ -160,6 +160,9 @@ passport.use(new LocalStrategy({
 
   // web compiler
   app.post('/output', function (req, res) {
+
+    console.log('req',req);
+
     let selected_language = req.body.language;
     let inputParameters = req.body.inputArea;
     let sourcecode = req.body.codeArea;
