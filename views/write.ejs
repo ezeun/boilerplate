@@ -1,57 +1,182 @@
-<!doctype html>
+<!DOCTYPE html>
 <html>
   <head>
     <!-- Required meta tags -->
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, shrink-to-fit=no"
+    />
 
     <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" integrity="sha384-xOolHFLEh07PJGoPkLv1IbcEPTNtaed2xpHsD9ESMhqIYd0nLMwNLD69Npy4HI+N" crossorigin="anonymous">
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css"
+      integrity="sha384-xOolHFLEh07PJGoPkLv1IbcEPTNtaed2xpHsD9ESMhqIYd0nLMwNLD69Npy4HI+N"
+      crossorigin="anonymous"
+    />
+
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+    </style>
 
     <title>Hello, world!</title>
   </head>
   <body>
     <%- include('nav.html') %>
 
-    <div class="container" style="margin :auto">
-      <form method="post" action="/output" novalidate name="sendform">
-        <div class="form-group">
-          <label for="codeSelection" style="color: blue; font-size: 20px;">Select Language</label>
-          <select name="language" id="codeSelection" class="form-control">
+    <div class="container" style="margin: auto">
+      <!--
+        <form action="/add" method="POST">
+            <div class="form-group">
+                <label>Code</label>
+                <textarea type="text" class="form-control" rows="5" name="code"></textarea>
+            </div>
+            <div class="form-group">
+                <label>Input</label>
+                <textarea type="text" class="form-control" rows="5" name="input"></textarea>
+            </div>
+            <div class="form-group">
+                <label">Output</label>
+                <textarea type="text" class="form-control" rows="5" name="output"></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">Run</button>
+        </form>
+      -->
+
+      <form method="post" action="/output" novalidate>
+        <div class="form-field" style="margin: 20px 0">
+          <label
+            for="codeSelection"
+            style="
+              color: #007bff;
+              font-size: 18px;
+              font-weight: 500;
+              margin: 0 5px 5px 0;
+            "
+            >Select Language
+          </label>
+          <select name="language" id="" class="input">
             <option value="C++">C++</option>
             <option value="Python">Python</option>
           </select>
         </div>
 
-        <div class="form-row">
-          <div class="col">
-            <label for="code" style="color: blue; font-size: 20px;">Code</label>
-            <textarea class="form-control" id="codeArea" name="codeArea" rows="14" cols="30" autofocus
-              onkeydown="if(event.keyCode===9){var v=this.value,s=this.selectionStart,e=this.selectionEnd;this.value=v.substring(0, s)+'\t'+v.substring(e);this.selectionStart=this.selectionEnd=s+1;return false;}">
-#include <iostream>
-using namespace std;
-int main() {
-  cout << "hello";
-  return 0;
-}</textarea>
+        <div
+          class="form-field"
+          style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px"
+        >
+          <!-- 좌측 배치 -->
+          <div style="display: grid; grid-template-rows: 10% auto">
+            <label
+              for="code"
+              style="
+                color: #007bff;
+                font-size: 20px;
+                font-weight: bold;
+                margin: 0 5px 5px 0;
+              "
+              >Code</label
+            >
+            <textarea
+              class="input"
+              style="
+                width: 100%;
+                border: 1px solid black;
+                border-radius: 10px;
+                padding: 10px;
+                resize: none;
+              "
+              id="codeArea"
+              name="codeArea"
+              rows="14"
+              cols="30"
+              autofocus
+              onkeydown="if(event.keyCode===9){var v=this.value,s=this.selectionStart,e=this.selectionEnd;this.value=v.substring(0, s)+'\t'+v.substring(e);this.selectionStart=this.selectionEnd=s+1;return false;}"
+            >
+#include &lt;iostream&gt;
+  using namespace std;
+  int main() {
+    cout << "hello";
+    return 0;
+  }
+            </textarea>
           </div>
-          <div class="col">
-            <label for="code" style="color: blue; font-size: 20px;">Inputs</label>
-            <textarea class="form-control" id="inputsProgram" name="inputArea" rows="4" cols="30"
-              style="font-weight: bolder; font-size: 20px; color: black; border: 1px solid black;"
-              placeholder="Input must be separated by Line"></textarea>
-          </div>
-          <div class="col">
-            <label for="code" style="color: blue; font-size: 20px;">Outputs</label>
-            <textarea class="form-control" id="outputsProgram" name="outputArea" rows="4" cols="30"
-              style="font-weight: bolder; font-size: 20px; color: black; border: 1px solid black;" readonly></textarea>
+
+          <!-- 우측 태그 -->
+          <div style="display: grid; grid-template-rows: 10% auto 10% auto">
+            <label
+              for="code"
+              style="
+                color: #007bff;
+                font-size: 20px;
+                font-weight: bold;
+                margin: 0 5px 5px 0;
+              "
+              >Inputs</label
+            >
+            <textarea
+              class="input"
+              id="inputsProgram"
+              name="inputArea"
+              rows="4"
+              cols="30"
+              style="
+                width: 100%;
+                font-weight: 500;
+                font-size: 18px;
+                color: black;
+                border: 1px solid black;
+                border-radius: 10px;
+                padding: 10px;
+                resize: none;
+              "
+              placeholder="Input must be separated by Line"
+            ></textarea>
+            <label
+              for="code"
+              style="
+                color: #007bff;
+                font-size: 20px;
+                font-weight: bold;
+                margin: 0 5px 5px 0;
+              "
+              >Output</label
+            >
+            <textarea
+              class="input"
+              id="inputsProgram"
+              name="inputArea"
+              rows="4"
+              cols="30"
+              style="
+                width: 100%;
+                font-weight: bolder;
+                font-size: 20px;
+                color: black;
+                border: 1px solid black;
+                border-radius: 10px;
+                padding: 10px;
+                resize: none;
+              "
+              placeholder=""
+            ></textarea>
           </div>
         </div>
 
-        <div class="form-actions mt-3">
+        <div class="d-grid gap-2 d-md-block" style="margin: 10px 0">
           <button class="btn btn-primary" type="submit">Execute</button>
-          <button class="btn btn-secondary" type="reset" onClick="refreshPage()">Reset</button>
-          <button type="button" class="btn btn-info" onclick="resultOut()">테스트</button>
+          <button
+            class="btn btn-outline-danger"
+            type="reset"
+            onClick="refreshPage()"
+          >
+            Reset
+          </button>
         </div>
       </form>
     </div>
@@ -59,8 +184,16 @@ int main() {
     <!-- Optional JavaScript; choose one of the two! -->
 
     <!-- Option 1: jQuery and Bootstrap Bundle (includes Popper) -->
-    <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-Fy6S3B9q64WdZWQUiU+q4/2Lc9npb8tCaSX9FK7E8HnRr0Jz8D6OP9dO5Vg3Q9ct" crossorigin="anonymous"></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js"
+      integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-Fy6S3B9q64WdZWQUiU+q4/2Lc9npb8tCaSX9FK7E8HnRr0Jz8D6OP9dO5Vg3Q9ct"
+      crossorigin="anonymous"
+    ></script>
 
     <!-- Option 2: Separate Popper and Bootstrap JS -->
     <!--
@@ -68,29 +201,5 @@ int main() {
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.min.js" integrity="sha384-+sLIOodYLS7CIrQpBjl+C7nPvqq+FbNUBDunl/OZv93DB7Ln/533i8e/mZXLi/P+" crossorigin="anonymous"></script>
     -->
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script>
-      const arrayData = $("form[name='sendform']").serializeArray();
-
-      console.log(arrayData);
-
-      const resultOut = () => {
-        console.log("resultOut 실행")
-        $.ajax({
-          type: "post",
-          url: "/output",
-          data: arrayData,
-          success: (result) => {
-            console.log("arrayData", arrayData);
-            console.log("성공", result);
-            $("#outputsProgram").val(result);
-          },
-          error: (error) => {
-            console.log("arrayData", arrayData);
-            console.log("실패", error);
-          },
-        });
-      };
-    </script>
   </body>
 </html>
